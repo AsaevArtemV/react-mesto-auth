@@ -14,13 +14,13 @@
 }
 
 @media screen and (max-width: 619px) {
-    .page {
-      padding-top: 28px;
-    }
+  .page {
+    padding-top: 28px;
+  }
 }
 
 @media screen and (max-width: 320px) {
-    .page {
-      padding-bottom: 36px;
-    }
+  .page {
+    padding-bottom: 36px;
+  }
 }

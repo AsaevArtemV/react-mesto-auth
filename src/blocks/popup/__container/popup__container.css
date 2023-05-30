@@ -8,10 +8,10 @@
   min-width: 430px;
 }
 
-@media screen and (max-width: 700px) {
-    .popup__container {
-      min-width: 282px;
-    }
+@media screen and (max-width: 619px) {
+  .popup__container {
+    min-width: 282px;
+  }
 }
 
 

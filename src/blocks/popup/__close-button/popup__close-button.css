@@ -17,11 +17,11 @@
   opacity: .6;
 }
 
-@media screen and (max-width: 700px) {
-    .popup__close-button {
-      min-height: 20px;
-      min-width: 20px;
-      top: -36px;
-      right: 0;
-    }
+@media screen and (max-width: 619px) {
+  .popup__close-button {
+    min-height: 20px;
+    min-width: 20px;
+    top: -36px;
+    right: 0;
+  }
 }

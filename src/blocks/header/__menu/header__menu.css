@@ -1,0 +1,20 @@
+.header__menu {
+    grid-area: menu;
+    box-sizing: border-box;
+  }
+  
+  @media screen and (max-width: 619px) {
+    .header__menu {
+      margin-right: 30px;
+    }
+  }
+  
+  @media screen and (max-width: 619px) {
+    .header_wrappable .header__menu {
+      margin: 0;
+      width: 100%;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s;
+    }
+  }

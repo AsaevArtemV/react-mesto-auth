@@ -1,13 +1,21 @@
 import { useState, useEffect } from "react";
-import Header from './Header';
-import Main from './Main';
-import Footer from './Footer';
-import ImagePopup from './ImagePopup';
-import EditProfilePopup from "./EditProfilePopup";
-import EditAvatarPopup from "./EditAvatarPopup";
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+
 import AddPlacePopup from "./AddPlacePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import EditProfilePopup from "./EditProfilePopup";
+import Footer from './Footer';
+//import Header from './Header';
+import ImagePopup from './ImagePopup';
+import InfoPopup from "./InfoPopup";
+import Login from "./Login";
+import Main from './Main';
 import PopupWithForm from "./PopupWithForm";
+import ProtectedRoute from "./ProtectedRoute";
+import Register from "./Register";
+
 import { api } from "../utils/Api";
+import { auth } from "../utils/Auth";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function App() {
@@ -20,6 +28,14 @@ function App() {
 
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+
+  const [infoMessage, setInfoMessage] = useState(null);
+
+  // Авторизация пользователя
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([
@@ -34,25 +50,25 @@ function App() {
   }, []);
 
   useEffect(() => {
-    function closeByEscape(evt) {
-      if(evt.key === 'Escape') {
+    function closeByEscape(e) {
+      if(e.key === 'Escape') {
         closeAllPopups();
       }
-    }
-    const handleOverlay = (evt) => {
-        if (evt.target.classList.contains('popup_is-opened')) {
+    };
+    const handleOverlay = (e) => {
+        if (e.target.classList.contains('popup_is-opened')) {
             closeAllPopups();
         }
       };
 
-    if(isOpen) { // навешиваем только при открытии
+    if (isOpen) { // навешиваем только при открытии
       document.addEventListener('keydown', closeByEscape);
       document.addEventListener('mousedown', handleOverlay);
       return () => {
         document.removeEventListener('keydown', closeByEscape);
         document.removeEventListener('mousedown', handleOverlay);
       }
-    }
+    };
   }, [isOpen])
 
   function closeAllPopups() {
@@ -60,9 +76,8 @@ function App() {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
+    setInfoMessage(null);
   }
-
-
 
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(true);
@@ -78,6 +93,10 @@ function App() {
 
   function handleCardClick(card) {
     setSelectedCard(card);
+  }
+
+  function handleShowInfoMessage(message) {
+    setInfoMessage(message);
   }
 
   function handleCardLike(likes, _id) {
@@ -131,20 +150,73 @@ function App() {
       .catch(console.error);
   }
 
+  // Авторизация
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      auth
+        .checkToken(token)
+        .then((res) => {
+          setEmail(res.data.email);
+          setIsLoggedIn(true);
+          navigate("/");
+        })
+        .catch(console.error);
+    }
+  }, [navigate]);
+
+  function handleLogin() {
+    setIsLoggedIn(true);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+  }
   return (
     <div className="App">
       <div className="page">
         <CurrentUserContext.Provider value={currentUser}>
-          <Header />
-            <Main
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onEditAvatar={handleEditAvatarClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onCardDelete={handleCardDelete}
-              cards={cards}
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute isLoggiedIn={isLoggedIn}>
+                  <Main
+                    onEditProfile={handleEditProfileClick}
+                    onAddPlace={handleAddPlaceClick}
+                    onEditAvatar={handleEditAvatarClick}
+                    onCardClick={handleCardClick}
+                    onCardLike={handleCardLike}
+                    onCardDelete={handleCardDelete}
+                    cards={cards}
+                    email={email}
+                    onLogout={handleLogout}
+                  />
+                </ProtectedRoute>
+              }
             />
+            <Route
+            path="/sign-up"
+            element={<Register handleShowInfoMessage={handleShowInfoMessage} />}
+            />
+            <Route
+              path="/sign-in"
+              element={
+                <Login
+                  handleShowInfoMessage={handleShowInfoMessage}
+                  onLogin={handleLogin}
+                />
+              }
+            />
+            <Route
+              path="*"
+              element={
+                isLoggedIn ? <Navigate to="/" /> : <Navigate to="/sign-in" />
+              }
+            />
+          </Routes>
+
           <Footer />
             {/* Редактирования профиля */}
             <EditProfilePopup
@@ -171,10 +243,14 @@ function App() {
             />
             {/* <!--Удаления карточки--> */}
             <PopupWithForm
-                name="delete"
-                title="Вы уверены?"
-                buttonText={'Да'}
-                isOpen={false}
+              name="delete"
+              title="Вы уверены?"
+              buttonText={'Да'}
+              isOpen={false}
+            />
+            <InfoPopup 
+              message={infoMessage} 
+              onClose={closeAllPopups} 
             />
         </CurrentUserContext.Provider>
       </div>

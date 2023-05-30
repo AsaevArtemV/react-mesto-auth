@@ -17,12 +17,12 @@
   opacity: .8;
 }
 
-@media screen and (max-width: 700px) {
-    .popup__save-button {
-      min-width: 238px;
-      min-height: 46px;
-      font-size: 14px;
-      line-height: 17px;
-      margin-top: 7px;
-    }
+@media screen and (max-width: 619px) {
+  .popup__save-button {
+    min-width: 238px;
+    min-height: 46px;
+    font-size: 14px;
+    line-height: 17px;
+    margin-top: 7px;
+  }
 }

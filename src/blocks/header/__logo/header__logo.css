@@ -1,11 +1,18 @@
 .header__logo {
-  max-width: 142px;
-  margin-bottom: 41px;
+  width: 142px;
+  height: 33px;
+  object-fit: contain;
+  object-position: left;
+  display: block;
+  margin: 45px 0 37px;
+  grid-area: logo;
 }
 
-@media screen and (max-width: 320px) {
-    .header__logo {
-      max-width: 103.74px;
-      margin-bottom: 31.6px;
-    }
+@media screen and (max-width: 619px) {
+  .header__logo {
+    width: 104px;
+    height: 25px;
+    margin: 28px 0 27px;
+    margin-left: 30px;
+  }
 }

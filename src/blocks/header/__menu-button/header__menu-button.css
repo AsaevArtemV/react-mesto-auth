@@ -1,0 +1,25 @@
+.header__menu-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    background-image: url(../../../images/mob_menu_btn.svg);
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: opacity 0.3s;
+    display: none;
+    grid-area: button;
+  }
+  
+  @media screen and (max-width: 619px) {
+    .header__menu-button {
+      margin-right: 30px;
+      display: block;
+    }
+  }
+  
+  .header__menu-button:hover {
+    opacity: 0.6;
+  }
