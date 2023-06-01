@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header";
-import { auth } from "../utils/Auth";
+//import App from "./App";
+//import { auth } from "../utils/Auth";
 
-function Register({ handleShowInfoMessage }) {
+function Register({ onRegister }) {
   const defaultValues = {
     email: "",
     password: "",
@@ -11,7 +12,7 @@ function Register({ handleShowInfoMessage }) {
 
   const [inputs, setInputs] = useState(defaultValues);
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   function handleChange(e) {
     const value = e.target.value;
@@ -21,7 +22,10 @@ function Register({ handleShowInfoMessage }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    auth
+    onRegister(inputs);
+    resetForm();
+
+    /*auth
       .register(inputs)
       .then(() => {
         handleShowInfoMessage({
@@ -37,7 +41,8 @@ function Register({ handleShowInfoMessage }) {
           text: text,
           isSuccess: false,
         });
-      });
+      });*/
+
   }
 
   function resetForm() {
@@ -63,6 +68,8 @@ function Register({ handleShowInfoMessage }) {
               name="email"
               value={inputs.email}
               onChange={handleChange}
+              minLength='6'
+              maxLength='40'
               required
             />
             <input
@@ -72,6 +79,8 @@ function Register({ handleShowInfoMessage }) {
               name="password"
               value={inputs.password}
               onChange={handleChange}
+              minLength='6'
+              maxLength='40'
               required
             />
             <button rype="submit" className="login__save-button">

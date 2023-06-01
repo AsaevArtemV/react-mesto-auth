@@ -1,18 +1,19 @@
-import { useContext } from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import Card from "./Card";
-import Header from "./Header";
+import { useContext } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import Card from './Card';
+import Header from './Header';
 
 function Main({
-    onEditProfile, 
-    onAddPlace,
-    onEditAvatar, 
-    onCardClick,
-    onCardLike,
-    onCardDelete,
-    cards,
-    email,
-    onLogout,
+  onEditProfile,
+  onAddPlace,
+  onEditAvatar,
+  onCardClick,
+  onCardLike,
+  onCardDelete,
+  cards,
+  email,
+  onLogout,
+  handleForCardDelete,
 }) {
 
   const userContext = useContext(CurrentUserContext);
@@ -36,12 +37,12 @@ function Main({
               />
               <button
                 onClick={onEditAvatar}
-                className="profile__avatar-button" 
-                type="button" 
+                className="profile__avatar-button"
+                type="button"
                 aria-label="Обнавление аватара профиля"
               />
             </div>
-              <div className="profile__info">
+            <div className="profile__info">
               <div className="profile__block">
                 <h1 className="profile__title">{userContext.name}</h1>
                 <button
@@ -59,7 +60,7 @@ function Main({
             className="profile__add-button"
             type="button"
             aria-label="Добавить карточку"
-         />
+          />
         </section>
         <section className="elements" aria-label="Просмотр картинки">
           {cards.map((item) => (
@@ -73,6 +74,7 @@ function Main({
               onCardClick={onCardClick}
               onCardLike={onCardLike}
               onCardDelete={onCardDelete}
+              handleForCardDelete={handleForCardDelete}
             />
           ))}
         </section>

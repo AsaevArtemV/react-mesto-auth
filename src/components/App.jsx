@@ -2,15 +2,14 @@ import { useState, useEffect } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 
 import AddPlacePopup from "./AddPlacePopup";
+import ConfirmActionPopup from './ConfirmActionPopup';
 import EditAvatarPopup from "./EditAvatarPopup";
 import EditProfilePopup from "./EditProfilePopup";
 import Footer from './Footer';
-//import Header from './Header';
 import ImagePopup from './ImagePopup';
 import InfoPopup from "./InfoPopup";
 import Login from "./Login";
 import Main from './Main';
-import PopupWithForm from "./PopupWithForm";
 import ProtectedRoute from "./ProtectedRoute";
 import Register from "./Register";
 
@@ -23,12 +22,18 @@ function App() {
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
+  const [toBeDeletedCard, setToBeDeletedCard] = useState(false);
 
-  const isOpen = isEditProfilePopupOpen || isAddPlacePopupOpen || isEditAvatarPopupOpen || selectedCard
+  const isOpen =
+  isEditProfilePopupOpen ||
+  isAddPlacePopupOpen ||
+  isEditAvatarPopupOpen ||
+  selectedCard ||
+  toBeDeletedCard;
 
+  const [currentCard, setCurrentCard] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
-
   const [infoMessage, setInfoMessage] = useState(null);
 
   // Авторизация пользователя
@@ -38,6 +43,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isLoggedIn) return;
     Promise.all([
       api.getUserInfo(),
       api.getInitialCards()
@@ -47,7 +53,7 @@ function App() {
       setCards([...res[1]])
     })
     .catch(console.error);
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
     function closeByEscape(e) {
@@ -77,6 +83,8 @@ function App() {
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
     setInfoMessage(null);
+    setToBeDeletedCard(null);
+    setCurrentCard(null);
   }
 
   function handleEditProfileClick() {
@@ -99,6 +107,10 @@ function App() {
     setInfoMessage(message);
   }
 
+  function handleForCardDelete(id) {
+    setCurrentCard(id);
+  }
+
   function handleCardLike(likes, _id) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = likes.some(i => i._id === currentUser._id);
@@ -111,11 +123,16 @@ function App() {
       .catch(console.error);
   }
 
+  function handleCardDeletePopup(card) {
+    setToBeDeletedCard(card);
+  }
+
   function handleCardDelete(id) {
     api
       .deleteCard(id)
       .then(() => {
         setCards((state) => state.filter((card) => card._id !== id));
+        closeAllPopups();
       })
       .catch(console.error);
   }
@@ -165,7 +182,22 @@ function App() {
     }
   }, [navigate]);
 
-  function handleLogin() {
+  function handleLogin(inputs) {
+    auth
+      .authorize(inputs)
+      .then(res => {
+        if (res.token) localStorage.setItem('token', res.token);
+        //resetForm();
+        //onLogin();
+        navigate("/");
+      })
+      .catch((err) => {
+        const text = err.message || "Что-то пошло не так! Попробуйте ещё раз.";
+        handleShowInfoMessage({
+          text: text,
+          isSuccess: false,
+        });
+      });
     setIsLoggedIn(true);
   }
 
@@ -173,6 +205,27 @@ function App() {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
   }
+
+  function handleRegister(inputs) {
+    auth
+      .register(inputs)
+      .then(() => {
+        handleShowInfoMessage({
+          text: "Вы успешно зарегистрировались!",
+          isSuccess: true,
+        });
+        //resetForm();
+        navigate("/sign-in");
+      })
+      .catch((err) => {
+        const text = err.message || "Что-то пошло не так! Попробуйте ещё раз.";
+        handleShowInfoMessage({
+          text: text,
+          isSuccess: false,
+        });
+      });
+  }
+
   return (
     <div className="App">
       <div className="page">
@@ -183,12 +236,13 @@ function App() {
               element={
                 <ProtectedRoute isLoggiedIn={isLoggedIn}>
                   <Main
+                    handleForCardDelete={handleForCardDelete}
                     onEditProfile={handleEditProfileClick}
                     onAddPlace={handleAddPlaceClick}
                     onEditAvatar={handleEditAvatarClick}
                     onCardClick={handleCardClick}
                     onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete}
+                    onCardDelete={handleCardDeletePopup}
                     cards={cards}
                     email={email}
                     onLogout={handleLogout}
@@ -197,8 +251,13 @@ function App() {
               }
             />
             <Route
-            path="/sign-up"
-            element={<Register handleShowInfoMessage={handleShowInfoMessage} />}
+              path="/sign-up"
+              element={
+                <Register 
+                  handleShowInfoMessage={handleShowInfoMessage}
+                  onRegister={handleRegister}
+                  />
+                }
             />
             <Route
               path="/sign-in"
@@ -242,15 +301,15 @@ function App() {
               onClose={closeAllPopups}
             />
             {/* <!--Удаления карточки--> */}
-            <PopupWithForm
-              name="delete"
-              title="Вы уверены?"
-              buttonText={'Да'}
-              isOpen={false}
+            <ConfirmActionPopup
+              isOpen={toBeDeletedCard}
+              onClose={closeAllPopups}
+              onConfirm={handleCardDelete}
+              currentCard={currentCard} //!10
             />
             <InfoPopup 
-              message={infoMessage} 
-              onClose={closeAllPopups} 
+              message={infoMessage}
+              onClose={closeAllPopups}
             />
         </CurrentUserContext.Provider>
       </div>

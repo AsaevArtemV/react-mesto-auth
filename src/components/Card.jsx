@@ -1,7 +1,17 @@
-import { useContext } from "react";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { useContext } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function Card({ onCardClick, link, name, likes, owner, _id, onCardLike, onCardDelete }) {
+function Card({
+  onCardClick,
+  link,
+  name,
+  likes,
+  owner,
+  _id,
+  onCardLike,
+  onCardDelete,
+  handleForCardDelete,
+}) {
 
   const currentUser = useContext(CurrentUserContext);
 
@@ -9,31 +19,36 @@ function Card({ onCardClick, link, name, likes, owner, _id, onCardLike, onCardDe
   const isOwn = owner._id === currentUser._id;
 
   // Определяем, есть ли у карточки лайк, поставленный текущим пользователем
-  const isLiked = likes.some(i => i._id === currentUser._id);
+  const isLiked = likes.some((i) => i._id === currentUser._id);
 
   // Создаём переменную, которую после зададим в `className` для кнопки лайка
-  const cardLikeButtonClassName = (`card__like-button ${isLiked && 'card__like-button_active'}`);
+  const cardLikeButtonClassName = `card__like-button ${
+    isLiked && 'card__like-button_active'
+  }`;
 
   function handleClickCard() {
     onCardClick({ link, name });
   }
 
   function handleDeleteClick() {
+    handleForCardDelete(_id);
     onCardDelete(_id);
   }
 
-  function handleLikeClick() { 
+  function handleLikeClick() {
     onCardLike(likes, _id);
   }
 
   return (
     <article className="card">
-      {isOwn && <button
-        className="card__delete-button"
-        type="button"
-        aria-label="Удалить"
-        onClick={handleDeleteClick}
-      />}
+      {isOwn && (
+        <button
+          className="card__delete-button"
+          type="button"
+          aria-label="Удалить"
+          onClick={handleDeleteClick}
+        />
+      )}
       <img
         className="card__image"
         src={link}
@@ -54,6 +69,6 @@ function Card({ onCardClick, link, name, likes, owner, _id, onCardLike, onCardDe
       </div>
     </article>
   );
-};
+}
 
 export default Card;

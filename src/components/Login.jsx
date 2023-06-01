@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header";
-import { auth } from "../utils/Auth";
+//import { auth } from "../utils/Auth";
 
 function Login({ handleShowInfoMessage, onLogin }) {
   const defaultValues = {
@@ -11,7 +11,7 @@ function Login({ handleShowInfoMessage, onLogin }) {
 
   const [inputs, setInputs] = useState(defaultValues);
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   function handleChange(event) {
     const value = event.target.value;
@@ -21,6 +21,10 @@ function Login({ handleShowInfoMessage, onLogin }) {
 
   function handleSubmit(event) {
     event.preventDefault();
+    onLogin(inputs)
+    resetForm()
+    
+    /*
     auth
       .authorize(inputs)
       .then(res => {
@@ -35,7 +39,7 @@ function Login({ handleShowInfoMessage, onLogin }) {
           text: text,
           isSuccess: false,
         });
-      });
+      });*/
   }
 
   function resetForm() {
