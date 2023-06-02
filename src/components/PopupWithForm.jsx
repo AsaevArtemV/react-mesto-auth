@@ -1,8 +1,8 @@
 function PopupWithForm({ title, name, isOpen, onClose, children, buttonText, onSubmit }) {
 
-    function handleOverlayClick(e) {
-        if (e.target === e.currentTarget) onClose(e);
-      }
+  function handleOverlayClick(e) {
+    if (e.target === e.currentTarget) onClose(e);
+  }
 
   return (
     <div className={`popup popup_type_${name} ${isOpen && 'popup_is-opened'}`}

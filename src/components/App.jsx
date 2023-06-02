@@ -187,8 +187,7 @@ function App() {
       .authorize(inputs)
       .then(res => {
         if (res.token) localStorage.setItem('token', res.token);
-        //resetForm();
-        //onLogin();
+        setIsLoggedIn(true);
         navigate("/");
       })
       .catch((err) => {
@@ -198,7 +197,6 @@ function App() {
           isSuccess: false,
         });
       });
-    setIsLoggedIn(true);
   }
 
   function handleLogout() {
@@ -214,7 +212,6 @@ function App() {
           text: "Вы успешно зарегистрировались!",
           isSuccess: true,
         });
-        //resetForm();
         navigate("/sign-in");
       })
       .catch((err) => {

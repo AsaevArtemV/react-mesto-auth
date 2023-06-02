@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "./Header";
-//import App from "./App";
-//import { auth } from "../utils/Auth";
 
 function Register({ onRegister }) {
   const defaultValues = {
@@ -11,8 +9,6 @@ function Register({ onRegister }) {
   };
 
   const [inputs, setInputs] = useState(defaultValues);
-
-  //const navigate = useNavigate();
 
   function handleChange(e) {
     const value = e.target.value;
@@ -24,25 +20,6 @@ function Register({ onRegister }) {
     e.preventDefault();
     onRegister(inputs);
     resetForm();
-
-    /*auth
-      .register(inputs)
-      .then(() => {
-        handleShowInfoMessage({
-          text: "Вы успешно зарегистрировались!",
-          isSuccess: true,
-        });
-        resetForm();
-        navigate("/sign-in");
-      })
-      .catch((err) => {
-        const text = err.message || "Что-то пошло не так! Попробуйте ещё раз.";
-        handleShowInfoMessage({
-          text: text,
-          isSuccess: false,
-        });
-      });*/
-
   }
 
   function resetForm() {
